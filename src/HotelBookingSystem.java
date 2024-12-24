@@ -15,6 +15,7 @@ class Room {
         return roomType;
     }
 
+
     public void setRoomNumber(String roomNumber) {
         if (roomNumber != null && !roomNumber.isEmpty()) {
             this.roomNumber = roomNumber;
