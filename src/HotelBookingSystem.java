@@ -13,7 +13,7 @@ class Room {
 
     public String getRoomType() {
         return roomType;
-    }а
+    }
 
     public void setRoomNumber(String roomNumber) {
         if (roomNumber != null && !roomNumber.isEmpty()) {
