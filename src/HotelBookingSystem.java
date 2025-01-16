@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 class Room {
     private String roomNumber;
@@ -20,42 +19,9 @@ class Room {
         return roomType;
     }
 
-    public void setRoomNumber(String roomNumber) {
-        if (roomNumber != null && !roomNumber.isEmpty()) {
-            this.roomNumber = roomNumber;
-        } else {
-            System.out.println("Invalid room number!");
-        }
-    }
-
-    public void setRoomType(String roomType) {
-        if (roomType != null && !roomType.isEmpty()) {
-            this.roomType = roomType;
-        } else {
-            System.out.println("Invalid room type!");
-        }
-    }
-
     @Override
     public String toString() {
-        return "Room{" +
-                "roomNumber='" + roomNumber + '\'' +
-                ", roomType='" + roomType + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Room room = (Room) obj;
-        return Objects.equals(roomNumber, room.roomNumber) &&
-                Objects.equals(roomType, room.roomType);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(roomNumber, roomType);
+        return roomNumber + " (" + roomType + ")";
     }
 }
 
@@ -70,72 +36,33 @@ class Guest {
         return name;
     }
 
-    public void setName(String name) {
-        if (name != null && !name.isEmpty()) {
-            this.name = name;
-        } else {
-            System.out.println("Invalid guest name!");
-        }
-    }
-
     @Override
     public String toString() {
-        return "Guest{" +
-                "name='" + name + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Guest guest = (Guest) obj;
-        return Objects.equals(name, guest.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
+        return name;
     }
 }
 
 class Booking {
-    private Room room;
-    private Guest guest;
+    Room room;
+    Guest guest;
 
     public Booking(Room room, Guest guest) {
         this.room = room;
         this.guest = guest;
     }
 
-    public Room getRoom() {
-        return room;
-    }
-
-    public Guest getGuest() {
-        return guest;
-    }
-
     @Override
     public String toString() {
-        return "Booking{" +
-                "room=" + room +
-                ", guest=" + guest +
-                '}';
+        return room + " -> " + guest;
     }
 }
 
 class HotelBookingSystem {
     private List<Room> rooms = new ArrayList<>();
-    private List<Guest> guests = new ArrayList<>();
     private List<Booking> bookings = new ArrayList<>();
 
     public void addRoom(Room room) {
         rooms.add(room);
-    }
-
-    public void addGuest(Guest guest) {
-        guests.add(guest);
     }
 
     public void createBooking(Room room, Guest guest) {
@@ -143,22 +70,16 @@ class HotelBookingSystem {
     }
 
     public List<Room> filterRoomsByType(String roomType) {
-        List<Room> filteredRooms = new ArrayList<>();
-        for (Room room : rooms) {
-            if (room.getRoomType().equalsIgnoreCase(roomType)) {
-                filteredRooms.add(room);
-            }
-        }
-        return filteredRooms;
+        return rooms.stream()
+                .filter(room -> room.getRoomType().equalsIgnoreCase(roomType))
+                .toList();
     }
 
     public Booking searchBookingByGuestName(String guestName) {
-        for (Booking booking : bookings) {
-            if (booking.getGuest().getName().equalsIgnoreCase(guestName)) {
-                return booking;
-            }
-        }
-        return null;
+        return bookings.stream()
+                .filter(booking -> booking.guest.toString().equalsIgnoreCase(guestName))
+                .findFirst()
+                .orElse(null);
     }
 
     public void sortRoomsByNumber() {
@@ -166,9 +87,7 @@ class HotelBookingSystem {
     }
 
     public void displayAllBookings() {
-        for (Booking booking : bookings) {
-            System.out.println(booking);
-        }
+        bookings.forEach(System.out::println);
     }
 
     public static void main(String[] args) {
@@ -177,11 +96,9 @@ class HotelBookingSystem {
         system.addRoom(new Room("101", "Deluxe"));
         system.addRoom(new Room("102", "Standard"));
         system.addRoom(new Room("103", "Suite"));
-        system.addGuest(new Guest("Alice"));
-        system.addGuest(new Guest("Bob"));
 
         Room room1 = system.filterRoomsByType("Deluxe").get(0);
-        Guest guest1 = system.guests.get(0);
+        Guest guest1 = new Guest("Alice");
         system.createBooking(room1, guest1);
 
         system.displayAllBookings();
