@@ -1,112 +1,58 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+public class HotelBookingSystem {
+    public static void main(String[] args) {
+        Room singleRoom = new Room("Single", 101, 100.0);
+        Room doubleRoom = new Room("Double", 102, 150.0);
+        Room suiteRoom = new Room("Suite", 103, 250.0);
+        Guest guest1 = new Guest("Аслан", "aslan@example.com", "+77001234567");
+        Guest guest2 = new Guest("Айгерім", "aigerim@example.com", "+77007654321");
+        Guest guest3 = new Guest("Нурлан", "nurlan@example.com", "+77008889999");
+        Booking booking1 = new Booking(singleRoom, guest1, 3); // 3 nights
+        Booking booking2 = new Booking(doubleRoom, guest2, 5); // 5 nights
+        Booking booking3 = new Booking(suiteRoom, guest3, 2); // 2 nights
+        List<Booking> bookings = new ArrayList<>();
+        bookings.add(booking1);
+        bookings.add(booking2);
+        bookings.add(booking3);
+        System.out.println("All Bookings:");
+        bookings.forEach(Booking::display);
+        System.out.println();
+        String filterType = "Double";
+        List<Booking> filteredBookings = bookings.stream()
+                .filter(booking -> booking.getRoom().getType().equals(filterType))
+                .collect(Collectors.toList());
 
-class Room {
-    private String roomNumber;
-    private String roomType;
+        System.out.println("Filtered Bookings (Room Type: " + filterType + "):");
+        filteredBookings.forEach(Booking::display);
+        System.out.println();
 
-    public Room(String roomNumber, String roomType) {
-        this.roomNumber = roomNumber;
-        this.roomType = roomType;
-    }
+        Collections.sort(bookings, Comparator.comparingDouble(Booking::calculateTotalCost));
 
-    public String getRoomNumber() {
-        return roomNumber;
-    }
+        System.out.println("Sorted Bookings (by Total Cost):");
+        bookings.forEach(Booking::display);
+        System.out.println();
 
-    public String getRoomType() {
-        return roomType;
-    }
-
-    @Override
-    public String toString() {
-        return roomNumber + " (" + roomType + ")";
-    }
-}
-
-class Guest {
-    private String name;
-
-    public Guest(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-}
-
-class Booking {
-    Room room;
-    Guest guest;
-
-    public Booking(Room room, Guest guest) {
-        this.room = room;
-        this.guest = guest;
-    }
-
-    @Override
-    public String toString() {
-        return room + " -> " + guest;
-    }
-}
-
-class HotelBookingSystem {
-    private List<Room> rooms = new ArrayList<>();
-    private List<Booking> bookings = new ArrayList<>();
-
-    public void addRoom(Room room) {
-        rooms.add(room);
-    }
-
-    public void createBooking(Room room, Guest guest) {
-        bookings.add(new Booking(room, guest));
-    }
-
-    public List<Room> filterRoomsByType(String roomType) {
-        return rooms.stream()
-                .filter(room -> room.getRoomType().equalsIgnoreCase(roomType))
-                .toList();
-    }
-
-    public Booking searchBookingByGuestName(String guestName) {
-        return bookings.stream()
-                .filter(booking -> booking.guest.toString().equalsIgnoreCase(guestName))
+        String searchGuestName = "Айгерім";
+        Booking foundBooking = bookings.stream()
+                .filter(booking -> booking.getGuest().getName().equals(searchGuestName))
                 .findFirst()
                 .orElse(null);
-    }
 
-    public void sortRoomsByNumber() {
-        rooms.sort(Comparator.comparing(Room::getRoomNumber));
-    }
+        if (foundBooking != null) {
+            System.out.println("Found Booking for Guest: " + searchGuestName);
+            foundBooking.display();
+        } else {
+            System.out.println("No booking found for guest: " + searchGuestName);
+        }
+        System.out.println();
 
-    public void displayAllBookings() {
-        bookings.forEach(System.out::println);
-    }
-
-    public static void main(String[] args) {
-        HotelBookingSystem system = new HotelBookingSystem();
-
-        system.addRoom(new Room("101", "Deluxe"));
-        system.addRoom(new Room("102", "Standard"));
-        system.addRoom(new Room("103", "Suite"));
-
-        Room room1 = system.filterRoomsByType("Deluxe").get(0);
-        Guest guest1 = new Guest("Alice");
-        system.createBooking(room1, guest1);
-
-        system.displayAllBookings();
-
-        Booking searchedBooking = system.searchBookingByGuestName("Alice");
-        System.out.println("Searched Booking: " + searchedBooking);
-
-        system.sortRoomsByNumber();
-        System.out.println("Sorted Rooms: " + system.rooms);
+        System.out.println("Comparing Booking 1 and Booking 2:");
+        System.out.println("Are they equal? " + booking1.equals(booking2));
+        System.out.println("HashCode of Booking 1: " + booking1.hashCode());
+        System.out.println("HashCode of Booking 2: " + booking2.hashCode());
     }
 }
